@@ -1,15 +1,19 @@
 import logging
-
-from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api.endpoints import router
 
 knowledge_base = None
+load_dotenv()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🚀 Starting ShieldPrompt API...")
+    print("🚀 Starting Detector Prompt Injection API...")
     try:
         yield
     except Exception as e:
@@ -27,12 +31,14 @@ app = FastAPI(
 )
 
 app.add_middleware(
-    CORSMiddleware,
+    CORSMiddleware,  # ty:ignore[invalid-argument-type]
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
