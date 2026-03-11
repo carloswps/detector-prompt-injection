@@ -6,6 +6,11 @@
     <option name="sdkName" value="Python 3.12 (detector-prompt-injection)" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (detector-prompt-injection)" project-jdk-type="Python SDK" />
+  <component name="RuffConfiguration">
+    <option name="enabled" value="true" />
+    <option name="formatting" value="false" />
+    <option name="sortImports" value="false" />
+  </component>
   <component name="TyConfiguration">
     <option name="enabled" value="true" />
   </component>

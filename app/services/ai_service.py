@@ -18,9 +18,9 @@ class AIService:
         self.huggingface_service = HFService()
         logging.info("AIService initialized.")
 
-    def is_injection_prompt(self, user_input: str) -> bool:
-        result = self.huggingface_service.is_injection(user_input)
-        return bool(result)
+    def get_injection_score(self, user_input: str) -> float:
+        result = self.huggingface_service.get_injection_score(user_input)
+        return result
 
     async def classify_prompt(self, user_input: str) -> str:
         system_instructions = """

@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.endpoints import router
+from data.database import engine
+from data.prompt_log import Base
 
 knowledge_base = None
 load_dotenv()
@@ -15,6 +17,9 @@ load_dotenv()
 async def lifespan(app: FastAPI):
     print("🚀 Starting Detector Prompt Injection API...")
     try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            print("Database created")
         yield
     except Exception as e:
         logging.error("Erro in lifespan: ", e)

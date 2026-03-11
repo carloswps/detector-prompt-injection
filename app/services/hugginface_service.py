@@ -24,17 +24,17 @@ class HFService:
         else:
             return {"error": "Failed to query Hugging Face API"}
 
-    def is_injection(self, text):
+    def get_injection_score(self, text):
         results = self.query(text)
 
         if not results or isinstance(results, dict):
-            print("Error querying Hugging Face API")
-            return False
+            print("Error querying Hugging Face API or invalid result format: ")
+            return 0.0
 
-        candidates = results[0] if isinstance(results[0], list) else results
+        candidates = results[0]
 
         for item in candidates:
             if item.get("label", "").upper() == "INJECTION":
-                return item.get("score", 0) > 0.5
+                return item.get("score", 0)
 
-        return False
+        return 0.0
