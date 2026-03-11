@@ -1,17 +1,21 @@
-import os
-
 import requests
 
+from app import config
 
-class HugginfaceService:
+
+class HFService:
     def __init__(self):
-        if not os.getenv("HF_TOKEN"):
+        hf_token = config.HF_TOKEN
+        if not hf_token:
             raise ValueError("Environment variable HF_TOKEN not set.")
 
-        self.api_url = "https://router.huggingface.co/hf-inference/models/protectai/deberta-v3-base-prompt-injection"
-        self.headers = {"Authorization": f"Bearer {os.getenv('HF_TOKEN')}"}
+        self.api_url = config.HF_API_URL
+        self.headers = {"Authorization": f"Bearer {hf_token}"}
 
     def query(self, text):
+        if not self.api_url:
+            raise ValueError("Environment variable HF_API_URL not set.")
+
         payload = {"inputs": text}
         response = requests.post(self.api_url, headers=self.headers, json=payload)
 
@@ -23,10 +27,14 @@ class HugginfaceService:
     def is_injection(self, text):
         results = self.query(text)
 
-        print(f"Hugging Face API Response: {results}")
-
-        if not results:
+        if not results or isinstance(results, dict):
             print("Error querying Hugging Face API")
             return False
 
-        return results
+        candidates = results[0] if isinstance(results[0], list) else results
+
+        for item in candidates:
+            if item.get("label", "").upper() == "INJECTION":
+                return item.get("score", 0) > 0.5
+
+        return False

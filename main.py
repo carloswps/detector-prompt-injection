@@ -40,6 +40,7 @@ app.add_middleware(
 
 app.include_router(router, prefix="/api/v1")
 
+
 @app.get("/")
 async def root():
     return {"status": "online", "message": "ShieldPrompt API is online!"}

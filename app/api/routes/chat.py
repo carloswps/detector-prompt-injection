@@ -20,6 +20,9 @@ async def chat(request: ChatResquest):
         return {"status": "blocked", "reason": "Huggin Face Prompt Injection Detected"}
 
     response = await ai_service.classify_prompt(user_text)
+    if response == "MALICIOUS":
+        return {"status": "blocked", "reason": "Malicious Prompt Detected"}
+
     return {
         "status": "success",
         "message": response,
