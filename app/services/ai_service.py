@@ -47,13 +47,16 @@ class AIService:
         full_prompt = f"{system_instructions}\n\nUsuário: {user_input}\nResposta:"
 
         try:
-            response = self.client.models.generate_conten(
+            if not self.model_name:
+                raise ValueError("Environment variable MODEL_NAME not set.")
+
+            response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=full_prompt,
                 config=types.GenerateContentConfig(temperature=0.0),
             )
 
-            result = response.text.strip().upper()
+            result = response.text.strip().upper() if response.text else ""
             if "SAFE" in result and "MALICIOUS" not in result:
                 return "SAFE"
             elif "MALICIOUS" in result:
