@@ -1,23 +1,22 @@
-from fastapi import APIRouter
+from typing import List
+
+from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.schemas.schemas import TextPrompt, PromptLogRead
 from app.services.ai_service import AIService
 from app.services.audit_log import save_audit_log
+from data.audit_repo import AuditRepository
 from data.database import get_db
 
 ai_service = AIService()
 
-route = APIRouter(tags=["/chat"])
+route = APIRouter(tags=["/analyze"])
 
 
-class ChatResquest(BaseModel):
-    prompt: str
-
-
-@route.post("/chat")
-async def chat(request: ChatResquest, db: AsyncSession = Depends(get_db)):
+@route.post("/analyze", status_code=200)
+async def chat(request: TextPrompt, db: AsyncSession = Depends(get_db)):
     user_text = request.prompt
 
     injection_score = ai_service.get_injection_score(user_text)
@@ -27,13 +26,13 @@ async def chat(request: ChatResquest, db: AsyncSession = Depends(get_db)):
         await save_audit_log(
             db=db,
             prompt=user_text,
-            classification="Huggin Face Prompt Injection",
+            classification="Hugging Face Prompt Injection",
             score=injection_score,
             blocked=True,
         )
         return {
             "status": "blocked",
-            "reason": "Huggin Face Prompt Injection Detected",
+            "reason": "Hugging Face Prompt Injection Detected",
             "score": formatted_score,
         }
 
@@ -67,3 +66,18 @@ async def chat(request: ChatResquest, db: AsyncSession = Depends(get_db)):
         "verification": "Safe",
         "risk_score": formatted_score,
     }
+
+
+@route.get("/history", status_code=200, response_model=List[PromptLogRead])
+async def get_history(db: AsyncSession = Depends(get_db)):
+    repo = AuditRepository(db)
+    return await repo.get_all()
+
+
+@route.get("/history/{log_id}", status_code=200, response_model=PromptLogRead)
+async def get_history_by_id(log_id: int, db: AsyncSession = Depends(get_db)):
+    repor = AuditRepository(db)
+    log = await repor.get_by_id(log_id)
+    if not log:
+        raise HTTPException(status_code=404, detail="Log not found")
+    return log
