@@ -3,7 +3,7 @@ import logging
 from google import genai
 from google.genai import types
 
-from app import config
+from app.core import config
 from app.services.hugginface_service import HFService
 
 

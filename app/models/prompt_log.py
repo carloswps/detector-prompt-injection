@@ -12,6 +12,7 @@ class PromptLog(Base):
     __tablename__ = "prompt_logs"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_email: Mapped[str] = mapped_column(index=True)
     timestamp: Mapped[datetime] = mapped_column(server_default=func.now())
     prompt: Mapped[str] = mapped_column()
     classification: Mapped[str] = mapped_column()

@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.endpoints import router
-from data.database import engine
-from data.prompt_log import Base
+from app.core.database import engine
+from app.models.prompt_log import Base
 
 knowledge_base = None
 load_dotenv()

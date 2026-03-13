@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data.prompt_log import PromptLog
+from app.models.prompt_log import PromptLog
 
 
 class AuditRepository:

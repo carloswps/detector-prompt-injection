@@ -1,6 +1,6 @@
 import requests
 
-from app import config
+from app.core import config
 
 
 class HFService:
