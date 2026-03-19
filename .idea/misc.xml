@@ -5,7 +5,7 @@
     <option name="pathToExecutable" value="$USER_HOME$/.asdf/shims/black" />
     <option name="sdkName" value="Python 3.12 (detector-prompt-injection)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (detector-prompt-injection)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (detector-prompt-injection) (3)" project-jdk-type="Python SDK" />
   <component name="RuffConfiguration">
     <option name="enabled" value="true" />
     <option name="formatting" value="false" />

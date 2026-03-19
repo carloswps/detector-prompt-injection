@@ -11,6 +11,7 @@ class Base(DeclarativeBase):
 class PromptLog(Base):
     __tablename__ = "prompt_logs"
 
+    user_id: Mapped[int] = mapped_column(foreign_keys="users.id", index=True)
     id: Mapped[int] = mapped_column(primary_key=True)
     user_email: Mapped[str] = mapped_column(index=True)
     timestamp: Mapped[datetime] = mapped_column(server_default=func.now())
