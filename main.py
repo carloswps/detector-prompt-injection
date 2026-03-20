@@ -13,17 +13,22 @@ knowledge_base = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🚀 Starting Detector Prompt Injection API...")
+    logging.info("🚀 Starting ShieldPrompt API v0.1.0...")
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-            print("Database created")
+            logging.info("✅ Database tables created/verified successfully")
+
+        logging.info("✨ ShieldPrompt API is ready to accept requests")
         yield
     except Exception as e:
-        logging.error("Erro in lifespan: ", e)
+        logging.error(f"❌ Error during startup: {e}", exc_info=True)
+        raise
     finally:
-        print("🔄 ShieldPrompt API is shutting down...")
-        app.state.knowledge_base = None
+        logging.info("🔄 ShieldPrompt API is shutting down...")
+        if hasattr(app.state, "knowledge_base"):
+            app.state.knowledge_base = None
+        logging.info("👋 Shutdown complete")
 
 
 app = FastAPI(
@@ -31,6 +36,7 @@ app = FastAPI(
     description="ShieldPrompt API",
     version="0.1.0",
     lifespan=lifespan,
+    docs_url="/docs"
 )
 
 app.add_middleware(
