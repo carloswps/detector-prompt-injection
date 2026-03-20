@@ -31,3 +31,12 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: str | None = None
+
+
+class UserRead(BaseModel):
+    id: int
+    email: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True

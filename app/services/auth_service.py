@@ -4,8 +4,8 @@ from starlette import status
 
 from app.repositories.user_repository import UserRepository
 from app.services.security_service import (
-    get_password_hash,
     create_access_token,
+    get_password_hash,
     verify_password,
 )
 
