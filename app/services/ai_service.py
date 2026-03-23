@@ -1,3 +1,4 @@
+import json
 import logging
 
 from google import genai
@@ -21,6 +22,39 @@ class AIService:
     def get_injection_score(self, user_input: str) -> float:
         result = self.huggingface_service.get_injection_score(user_input)
         return result
+
+    async def check_rules_compliance(self, user_input: str, rules_list: list) -> dict:
+        if not rules_list:
+            return {"is_violation": False, "rule_type": None, "reason": None}
+
+        context_instructions = f"""
+                Você é um Auditor de Conformidade de IA. 
+                Sua tarefa é verificar se a [ENTRADA DO USUÁRIO] viola as [REGRAS DE NEGÓCIO] definidas.
+
+                REGRAS DE NEGÓCIO ATIVAS:
+                {rules_list}
+
+                ENTRADA DO USUÁRIO:
+                "{user_input}"
+
+                INSTRUÇÕES DE SAÍDA:
+                - Responda OBRIGATORIAMENTE em formato JSON.
+                - 'is_violation': true se o usuário tentar falar sobre algo proibido nas regras.
+                - 'rule_type': o Tipo da regra que foi violada.
+                - 'reason': breve explicação do porquê foi bloqueado.
+                """
+        try:
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=context_instructions,
+                config=types.GenerateContentConfig(
+                    temperature=0.0, response_mime_type="application/json"
+                ),
+            )
+            return json.loads(response.text)
+        except Exception as e:
+            logging.error(f"Error generating text: {e}")
+            return {"is_violation": False, "rule_type": None, "reason": None}
 
     async def classify_prompt(self, user_input: str) -> str:
         system_instructions = """

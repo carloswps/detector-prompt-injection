@@ -5,8 +5,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.endpoints import router
-from app.core.database import engine
-from app.models.prompt_rule import Base
 
 knowledge_base = None
 
@@ -15,10 +13,6 @@ knowledge_base = None
 async def lifespan(app: FastAPI):
     logging.info("🚀 Starting ShieldPrompt API v0.1.0...")
     try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-            logging.info("✅ Database tables created/verified successfully")
-
         logging.info("✨ ShieldPrompt API is ready to accept requests")
         yield
     except Exception as e:
@@ -36,7 +30,7 @@ app = FastAPI(
     description="ShieldPrompt API",
     version="0.1.0",
     lifespan=lifespan,
-    docs_url="/docs"
+    docs_url="/docs",
 )
 
 app.add_middleware(
