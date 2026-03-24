@@ -4,10 +4,11 @@ from jose import jwt
 from passlib.context import CryptContext
 
 from app.core import config
+from app.core.config import settings
 
-secret_key = config.SECRET_KEY
-algorithm = config.ALGORITHM
-access_token_expire = config.ACCESS_TOKEN_EXPIRE
+secret_key = settings.SECRET_KEY
+algorithm = settings.ALGORITHM
+access_token_expire = settings.ACCESS_TOKEN_EXPIRE
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
 

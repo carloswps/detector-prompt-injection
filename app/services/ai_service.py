@@ -5,17 +5,18 @@ from google import genai
 from google.genai import types
 
 from app.core import config
+from app.core.config import settings
 from app.services.hugginface_service import HFService
 
 
 class AIService:
     def __init__(self):
-        api_key = config.GOOGLE_GEMINI_API_KEY
+        api_key = settings.GOOGLE_GEMINI_API_KEY
         if not api_key:
             raise ValueError("Environment variable GOOGLE_GEMINI_API_KEY not set.")
 
         self.client = genai.Client(api_key=api_key)
-        self.model_name = config.GOOGLE_MODEL
+        self.model_name = settings.GOOGLE_MODEL
         self.huggingface_service = HFService()
         logging.info("AIService initialized.")
 

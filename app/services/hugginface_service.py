@@ -1,15 +1,16 @@
 import requests
 
 from app.core import config
+from app.core.config import settings
 
 
 class HFService:
     def __init__(self):
-        hf_token = config.HF_TOKEN
+        hf_token = settings.HF_TOKEN
         if not hf_token:
             raise ValueError("Environment variable HF_TOKEN not set.")
 
-        self.api_url = config.HF_API_URL
+        self.api_url = settings.HF_API_URL
         self.headers = {"Authorization": f"Bearer {hf_token}"}
 
     def query(self, text):

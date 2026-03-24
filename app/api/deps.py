@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.core import config
+from app.core.config import settings
 from app.core.database import get_db
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
@@ -13,10 +14,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/login")
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+        token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
 ) -> User:
-    secret_key = config.SECRET_KEY
-    algorithm = config.ALGORITHM
+    secret_key = settings.SECRET_KEY
+    algorithm = settings.ALGORITHM
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
