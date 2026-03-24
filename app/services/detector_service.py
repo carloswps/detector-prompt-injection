@@ -13,7 +13,7 @@ class DetectorService:
 
     async def analyze_and_log(self, user_text: str, client_id: str, user_id: int):
 
-        rules = await self.rule_repo.get_rules_by_client_id(client_id)
+        rules = await self.rule_repo.get_rules_by_client_id(client_id=client_id)
         formatted_score = 0.0
 
         if rules:

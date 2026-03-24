@@ -8,7 +8,7 @@ class RuleRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_rules_by_client_id(self, client_id: int):
+    async def get_rules_by_client_id(self, client_id: str):
         query = select(PromptRule).where(PromptRule.client_id == client_id)
         result = await self.db.execute(query)
         return result.scalars().all()
@@ -23,7 +23,15 @@ class RuleRepository:
         await self.db.commit()
         return rule
 
-    async def delete_rule(self, rule_id: int):
-        rule = PromptRule(id=rule_id)
-        await self.db.delete(rule)
-        await self.db.commit()
+    async def delete_rule(self, rule_id: int, user_id: int):
+        query = select(PromptRule).where(
+            PromptRule.id == rule_id, PromptRule.user_id == user_id
+        )
+        result = await self.db.execute(query)
+        rule = result.scalars().first()
+
+        if rule:
+            await self.db.delete(rule)
+            await self.db.commit()
+            return {"status": "success"}
+        return {"status": "error", "message": "Rule not found or not authorized"}

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.endpoints import router
+from app.api.routes import auth, chat, rules
 
 knowledge_base = None
 
@@ -41,7 +41,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router, prefix="/api/v1")
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(chat.router, prefix="/api/v1/chat", tags=["Chat"])
+app.include_router(rules.router, prefix="/api/v1/rules", tags=["Rules"])
 
 
 @app.get("/")

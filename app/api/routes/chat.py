@@ -14,21 +14,23 @@ from app.services.detector_service import DetectorService
 
 ai_service = AIService()
 
-route = APIRouter(tags=["/analyze"])
+router = APIRouter(tags=["/analyze"])
 
 
-@route.post("/analyze", status_code=200)
+@router.post("/analyze", status_code=200)
 async def chat(
         request: TextPrompt,
         db: AsyncSession = Depends(get_db),
         current_user: Annotated[UserRead, Depends(get_current_user)] = None,
 ):
     detector = DetectorService(db)
-    result = await detector.analyze_and_log(request.prompt, current_user.id)
+    result = await detector.analyze_and_log(
+        request.prompt, client_id=str(current_user.id), user_id=current_user.id
+    )
     return result
 
 
-@route.get("/history", status_code=200, response_model=List[PromptLogRead])
+@router.get("/history", status_code=200, response_model=List[PromptLogRead])
 async def get_history(
         db: AsyncSession = Depends(get_db),
         current_user: Annotated[UserRead, Depends(get_current_user)] = None,
@@ -37,7 +39,7 @@ async def get_history(
     return await repo.get_all()
 
 
-@route.get("/history/{log_id}", status_code=200, response_model=PromptLogRead)
+@router.get("/history/{log_id}", status_code=200, response_model=PromptLogRead)
 async def get_history_by_id(
         log_id: int,
         db: AsyncSession = Depends(get_db),

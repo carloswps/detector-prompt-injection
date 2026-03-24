@@ -1,38 +1,30 @@
-import os
+from anyio.functools import lru_cache
+from pydantic_settings import BaseSettings
 
-from dotenv import load_dotenv
 
-load_dotenv()
+class Settings(BaseSettings):
+    # DB
+    DATABASE_URL: str
 
-GOOGLE_GEMINI_API_KEY = os.getenv("GOOGLE_GEMINI_API_KEY")
-if GOOGLE_GEMINI_API_KEY is None:
-    raise ValueError("GOOGLE_GEMINI_API_KEY environment variable not set.")
+    # Auth
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE: int = 30
 
-GOOGLE_MODEL = os.getenv("GOOGLE_MODEL")
-if GOOGLE_MODEL is None:
-    raise ValueError("GOOGLE_MODEL environment variable not set.")
+    # Google Gemini
+    GOOGLE_GEMINI_API_KEY: str
+    GOOGLE_MODEL: str
+    HF_TOKEN: str
+    HF_API_URL: str
 
-HF_TOKEN = os.getenv("HF_TOKEN")
-if HF_TOKEN is None:
-    raise ValueError("HF_TOKEN environment variable not set.")
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
-HF_API_URL = os.getenv("HF_API_URL")
-if HF_API_URL is None:
-    raise ValueError("HF_API_URL environment variable not set.")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL is None:
-    raise ValueError("DATABASE_URL environment variable not set.")
+@lru_cache
+def get_settings():
+    return Settings()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-if SECRET_KEY is None:
-    raise ValueError("SECRET_KEY environment variable not set.")
 
-ALGORITHM = os.getenv("ALGORITHM")
-if ALGORITHM is None:
-    raise ValueError("ALGORITHM environment variable not set.")
-
-ACCESS_TOKEN_EXPIRE = os.getenv("ACCESS_TOKEN_EXPIRE")
-if ACCESS_TOKEN_EXPIRE is None:
-    raise ValueError("ACCESS_TOKEN_EXPIRE environment variable not set.")
-ACCESS_TOKEN_EXPIRE = int(ACCESS_TOKEN_EXPIRE)
+settings = get_settings()

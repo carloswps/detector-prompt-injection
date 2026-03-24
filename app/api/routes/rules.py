@@ -8,11 +8,12 @@ from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.repositories.rule_repository import RuleRepository
 from app.schemas.schemas import UserRead
+from app.services.rule_service import RuleService
 
-route = APIRouter(tags=["/rules"])
+router = APIRouter(tags=["/rules"])
 
 
-@route.post("/rules", status_code=200)
+@router.post("/", status_code=200)
 async def create_new_rule(
         pattern: str,
         rule_type: str,
@@ -20,32 +21,33 @@ async def create_new_rule(
         db: AsyncSession = Depends(get_db),
         current_user: Annotated[UserRead, Depends(get_current_user)] = None,
 ):
-    repository = RuleRepository(db)
-    rule = await repository.create_rule(
+    service = RuleService(db)
+    return await service.created_new_rule(
         user_id=current_user.id,
         client_id=client_id,
         rule_type=rule_type,
         pattern=pattern,
     )
-    return {"status": "success", "rule_id": rule.id}
 
 
-@route.get("/rules", status_code=200)
+@router.get("/", status_code=200)
 async def list_rules(
         db: AsyncSession = Depends(get_db),
         current_user: Annotated[UserRead, Depends(get_current_user)] = None,
 ):
-    repository = RuleRepository(db)
-    rules = await repository.get_rules_by_client_id(client_id=current_user.id)
+    rules = await RuleRepository(db).get_rules_by_client_id(
+        client_id=str(current_user.id)
+    )
     return rules
 
 
-@route.delete("/rules/{rule_id}", status_code=200)
+@router.delete("/{rule_id}", status_code=200)
 async def delete_rule(
         rule_id: int,
         db: AsyncSession = Depends(get_db),
         current_user: Annotated[UserRead, Depends(get_current_user)] = None,
 ):
-    repository = RuleRepository(db)
-    await repository.delete_rule(rule_id)
-    return {"status": "success"}
+    result = await RuleService(db).delete_rule(rule_id, current_user.id)
+    if result is None:
+        raise ValueError("Rule not found or you don't have permission to delete it")
+    return result
