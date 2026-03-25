@@ -40,3 +40,20 @@ class UserRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class RuleRead(BaseModel):
+    id: int
+    pattern: str
+    rule_type: str
+    client_id: str
+    user_id: int
+
+    class Config:
+        from_attributes = True
+
+
+class RuleCreate(BaseModel):
+    pattern: str
+    rule_type: str
+    client_id: str

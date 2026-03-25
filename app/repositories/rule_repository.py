@@ -17,7 +17,7 @@ class RuleRepository:
             self, user_id: int, client_id: str, rule_type: str, pattern: str
     ):
         rule = PromptRule(
-            user_id=user_id, client_id=client_id, type=rule_type, pattern=pattern
+            user_id=user_id, client_id=client_id, rule_type=rule_type, pattern=pattern
         )
         self.db.add(rule)
         await self.db.commit()

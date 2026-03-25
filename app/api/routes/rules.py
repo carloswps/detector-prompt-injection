@@ -7,26 +7,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.repositories.rule_repository import RuleRepository
-from app.schemas.schemas import UserRead
+from app.schemas.schemas import UserRead, RuleCreate, RuleRead
 from app.services.rule_service import RuleService
 
-router = APIRouter(tags=["/rules"])
+router = APIRouter(tags=["Rules"])
 
 
-@router.post("/", status_code=200)
+@router.post("/", response_model=RuleRead, status_code=200)
 async def create_new_rule(
-        pattern: str,
-        rule_type: str,
-        client_id: str,
+        rule_in: RuleCreate,
         db: AsyncSession = Depends(get_db),
         current_user: Annotated[UserRead, Depends(get_current_user)] = None,
 ):
     service = RuleService(db)
     return await service.created_new_rule(
         user_id=current_user.id,
-        client_id=client_id,
-        rule_type=rule_type,
-        pattern=pattern,
+        client_id=rule_in.client_id,
+        rule_type=rule_in.rule_type,
+        pattern=rule_in.pattern,
     )
 
 

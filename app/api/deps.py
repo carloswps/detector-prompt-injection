@@ -14,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/login")
 
 
 async def get_current_user(
-        token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
 ) -> User:
     secret_key = settings.SECRET_KEY
     algorithm = settings.ALGORITHM
