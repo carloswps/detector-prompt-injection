@@ -1,85 +1,88 @@
-# Projeto de API de Análise de Prompt
+# Detector de Prompt Injection
 
-## Visão Geral
+API especializada em detecção de ataques de injeção de prompt em sistemas de IA, desenvolvida com FastAPI e Python 3.12. Analisa textos em busca de padrões maliciosos utilizando modelos do Hugging Face e Google SDK, persistindo o histórico de análises em PostgreSQL.
 
-Este projeto é uma API desenvolvida com **FastAPI** que permite analisar prompts de texto e registrar o resultado da
-análise. Além disso, oferece endpoints para consultar o histórico das análises realizadas.
+---
 
-## Tecnologias Utilizadas
+## Stack
 
-- **Python 3.12**
-- **FastAPI** - Framework web para criar APIs rápidas e assíncronas.
-- **SQLAlchemy** (async) - ORM para interagir com o banco de dados.
-- **Alembic** - Ferramenta de migração de banco de dados.
-- **Pydantic** - Validação de dados via modelos.
-- **AsyncSession** - Suporte a transações assíncronas no SQLAlchemy.
+| Camada | Tecnologias |
+|---|---|
+| **API** | Python 3.12, FastAPI, Uvicorn |
+| **IA / Modelos** | Hugging Face Transformers, Google SDK |
+| **Banco de Dados** | PostgreSQL, SQLAlchemy (Async), Alembic |
+| **Validação** | Pydantic v2 |
+| **Infra** | Docker, Docker Compose |
 
-## Dependências Principais
+---
 
-- `fastapi`
-- `uvicorn`
-- `sqlalchemy[asyncio]`
-- `alembic`
-- `python-dotenv` (para gerenciamento de variáveis de ambiente)
-- `aiogram` (ou outra biblioteca de serviço de IA, caso aplicável)
+## Endpoints
 
-## Endpoints Principais
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/analyze` | Analisa um prompt e retorna o resultado da classificação |
+| `GET` | `/history` | Lista o histórico completo de análises |
+| `GET` | `/history/{log_id}` | Retorna uma análise específica pelo ID |
 
-| Método | Rota                | Descrição                                      |
-|--------|---------------------|------------------------------------------------|
-| `POST` | `/analyze`          | Recebe um prompt de texto e executa a análise. |
-| `GET`  | `/history`          | Retorna o histórico completo de análises.      |
-| `GET`  | `/history/{log_id}` | Retorna um registro específico pelo ID.        |
+---
 
-## Como Executar
+## Como rodar
 
-1. **Clonar o repositório**
-   ```bash
-   git clone <url-do-repositorio>
-   cd <pasta-do-projeto>
-   ```
+### Pré-requisitos
+- Docker e Docker Compose instalados
 
-2. **Criar e ativar o ambiente virtual**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate   # Linux/Mac
-   .\\venv\\Scripts\\activate   # Windows
-   ```
+### Com Docker (recomendado)
+```bash
+git clone https://github.com/carloswps/detector-prompt-injection.git
+cd detector-prompt-injection
+cp .env.example .env  # configure as variáveis
+docker compose up --build
+```
 
-3. **Instalar as dependências**
-   ```bash
-   pip install -r requirements.txt
-   ```
+Acesse a documentação interativa em: `http://localhost:8000/docs`
 
-4. **Configurar o banco de dados**
-    - Crie um banco PostgreSQL (ou outro compatível).
-    - Defina a variável de ambiente `DATABASE_URL` com a string de conexão.
+### Sem Docker
 
-5. **Aplicar migrações (se houver)**
-   ```bash
-   alembic upgrade head
-   ```
+```bash
+# 1. Ambiente virtual
+python -m venv venv
+source venv/bin/activate      # Linux/Mac
+.\\venv\\Scripts\\activate    # Windows
 
-6. **Executar a aplicação**
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+# 2. Dependências
+pip install -r requirements.txt
 
-7. **Testar a API**  
-   Acesse a documentação interativa automática em:
-   ```
-   http://127.0.0.1:8000/docs
-   ```
+# 3. Variáveis de ambiente
+cp .env.example .env
+
+# 4. Migrações
+alembic upgrade head
+
+# 5. Rodar
+uvicorn app.main:app --reload
+```
+
+---
+
+## Variáveis de ambiente
+
+```ini
+DATABASE_URL=...
+HUGGINGFACE_API_KEY=hf_...
+GOOGLE_API_KEY=...
+```
+
+---
 
 ## Testes
 
-- Execute os testes unitários com `pytest` ou a ferramenta de teste que o projeto utiliza.
-- Certifique-se de que todas as dependências de teste (como `pytest-asyncio`) estejam instaladas.
+```bash
+pip install pytest pytest-asyncio
+pytest
+```
 
-## Contribuição
+---
 
-- Fork o projeto.
-- Crie uma branch para a sua feature (`git checkout -b feature/nova-funcionalidade`).
-- Commit suas mudanças (`git commit -m 'Add some feature'`).
-- Faça push para a branch (`git push origin feature/nova-funcionalidade`).
-- Abra um Pull Request.
+## Licença
+
+MIT
